@@ -1,0 +1,21 @@
+version: '3'
+services:
+
+  recipemanagerapi:
+    image: recipemanagerapi:latest
+    container_name: recipemanagerapi
+    ports:
+      - 8080:8080
+    env_file:
+      - .env
+    depends_on:
+      - postgres
+
+  postgres:
+    image: postgres:latest
+    container_name: recipemanagerdb
+    network_mode: host
+    environment:
+      POSTGRES_PASSWORD: password
+    volumes:
+      - ./sql/:/docker-entrypoint-initdb.d/

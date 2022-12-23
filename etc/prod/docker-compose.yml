@@ -1,0 +1,8 @@
+version: '3'
+services:
+
+  chessmonetizedapi:
+    image: recipemanagerapi:1.0.0
+    container_name: recipemanagerapi
+    env_file:
+      - .env

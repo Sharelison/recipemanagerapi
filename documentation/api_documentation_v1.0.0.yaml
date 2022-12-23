@@ -1,0 +1,177 @@
+---
+openapi: 3.0.1
+info:
+  title: RecipeManager API
+  description: REST API that allows users to manage their favourite recipes
+  version: v0.0.1
+paths:
+  "/api/v1/recipe/create":
+    post:
+      tags:
+        - recipe-controller
+      operationId: createRecipe
+      requestBody:
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/RecipeRequest"
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            "application/json":
+              schema:
+                "$ref": "#/components/schemas/RecipeResponse"
+  "/api/v1/recipe/{id}/update":
+    patch:
+      tags:
+        - recipe-controller
+      operationId: updateRecipe
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/RecipeRequest"
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            "application/json":
+              schema:
+                "$ref": "#/components/schemas/RecipeResponse"
+        '404':
+          description: Will return NOT_FOUND if id does not exist.
+  "/api/v1/recipes":
+    get:
+      tags:
+        - recipe-controller
+      operationId: findAllRecipes
+      responses:
+        '200':
+          description: OK
+          content:
+            "application/json":
+              schema:
+                type: array
+                items:
+                  "$ref": "#/components/schemas/RecipeResponse"
+  "/api/v1/recipes/search":
+    get:
+      tags:
+        - recipe-controller
+      operationId: searchRecipes
+      parameters:
+        - name: query
+          in: query
+          required: true
+          schema:
+            "$ref": "#/components/schemas/RecipeQuery"
+      responses:
+        '200':
+          description: OK
+          content:
+            "application/json":
+              schema:
+                type: array
+                items:
+                  "$ref": "#/components/schemas/RecipeResponse"
+  "/api/v1/recipe/{id}/delete":
+    delete:
+      tags:
+        - recipe-controller
+      operationId: deleteRecipe
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: NO_CONTENT
+components:
+  schemas:
+    RecipeRequest:
+      required:
+        - ingredients
+        - instructions
+        - name
+        - vegetarian
+      type: object
+      properties:
+        name:
+          type: string
+        servingsSize:
+          type: integer
+          format: int32
+        vegetarian:
+          type: boolean
+          description: "true for vegetarian recipes and false for non vegetarian recipes"
+        ingredients:
+          maxItems: 2147483647
+          minItems: 1
+          type: array
+          items:
+            type: string
+        instructions:
+          maxItems: 2147483647
+          minItems: 1
+          type: array
+          items:
+            type: string
+          description: list of instructions
+    RecipeResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        servingsSize:
+          type: integer
+          format: int32
+        vegetarian:
+          type: boolean
+        ingredients:
+          type: array
+          items:
+            type: string
+        instructions:
+          type: array
+          items:
+            type: string
+          description: list of instructions
+    RecipeQuery:
+      type: object
+      properties:
+        name:
+          type: string
+        ingredientsInclude:
+          type: array
+          items:
+            type: string
+          description: list of ingredients that recipe must include
+        ingredientsExclude:
+          type: array
+          items:
+            type: string
+          description: list of ingredients that recipe must NOT include
+        instructionsContains:
+          type: string
+          description: instructions should contain text
+        minServingsSize:
+          type: integer
+          format: int32
+        vegetarian:
+          type: boolean
